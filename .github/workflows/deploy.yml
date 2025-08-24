@@ -102,7 +102,7 @@ jobs:
       - name: Update deployment image
         run: |
           kubectl set image deployment/portfolio-app \
-            portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${{ github.sha }} \
+            portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${GITHUB_SHA:0:7} \
             -n portfolio
           kubectl rollout status deployment/portfolio-app -n portfolio --timeout=300s
 
