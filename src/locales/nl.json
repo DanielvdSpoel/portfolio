@@ -1,0 +1,20 @@
+{
+  "greeting": "Hoi, ik ben Daniël",
+  "roles": {
+    "devops": "DevOps Engineer",
+    "fullstack": "Full Stack Developer",
+    "data": "Data Engineer"
+  },
+  "description": "DevOps en Data Engineer met uitgebreide ervaring in het ontwerpen en onderhouden van grootschalige gedistribueerde systemen. Gespecialiseerd in het bouwen van robuuste infrastructuur en datapipelines die dagelijks duizenden gebruikers bedienen. Bewezen staat van dienst in het integreren van complexe systeemcomponenten om betrouwbare, schaalbare oplossingen te leveren gedurende de volledige software-ontwikkelingscyclus.",
+  "social": {
+    "linkedin": "LinkedIn Profiel",
+    "github": "GitHub Profiel",
+    "discord": "Discord Profiel",
+    "email": "E-mail mij"
+  },
+  "ui": {
+    "switchLanguage": "Wissel taal",
+    "switchToDark": "Schakel naar donkere modus",
+    "switchToLight": "Schakel naar lichte modus"
+  }
+}

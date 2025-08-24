@@ -1,0 +1,20 @@
+{
+  "greeting": "Hey, I'm Daniël",
+  "roles": {
+    "devops": "DevOps Engineer",
+    "fullstack": "Full Stack Developer",
+    "data": "Data Engineer"
+  },
+  "description": "DevOps and Data Engineer with extensive experience architecting and maintaining large-scale distributed systems. Specialized in building robust infrastructure and data pipelines that serve thousands of users daily. Proven track record of integrating complex system components to deliver reliable, scalable solutions across the full software development lifecycle.",
+  "social": {
+    "linkedin": "LinkedIn Profile",
+    "github": "GitHub Profile",
+    "discord": "Discord Profile",
+    "email": "Email Address"
+  },
+  "ui": {
+    "switchLanguage": "Switch language",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  }
+}
