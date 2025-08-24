@@ -9,12 +9,16 @@ function getBrowserLanguage(): string {
   if (saved && (saved === 'en' || saved === 'nl')) {
     return saved
   }
-  
+
   const browserLang = navigator.language.toLowerCase()
   if (browserLang.startsWith('nl')) {
     return 'nl'
   }
-  
+
+  if (window.location.hostname.endsWith('.nl')) {
+    return 'nl'
+  }
+
   return 'en'
 }
 
