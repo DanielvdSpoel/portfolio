@@ -98,7 +98,6 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
           chmod 600 ~/.kube/config
-        if: ${{ secrets.KUBECONFIG != '' }}
 
       - name: Update deployment image
         run: |
@@ -106,10 +105,8 @@ jobs:
             portfolio=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main-${{ github.sha }} \
             -n portfolio
           kubectl rollout status deployment/portfolio-app -n portfolio --timeout=300s
-        if: ${{ secrets.KUBECONFIG != '' }}
 
       - name: Verify deployment
         run: |
           kubectl get pods -n portfolio
           kubectl get ingress -n portfolio
-        if: ${{ secrets.KUBECONFIG != '' }}
