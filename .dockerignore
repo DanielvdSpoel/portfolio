@@ -44,10 +44,3 @@ test
 
 # CI/CD
 .github
-
-# Misc
-.eslintrc*
-.prettierrc*
-tsconfig*.json
-vite.config.ts
-eslint.config.ts
