@@ -32,9 +32,11 @@ spec:
         fsGroup: 101
         seccompProfile:
           type: RuntimeDefault
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
       - name: portfolio
-        image: danielvdspoel/portfolio:latest
+        image: harbor.danielvdspoel.com/danielvdspoel.com/portfolio:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
