@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: harbor.danielvdspoel.com
-  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/portfolio
+  IMAGE_NAME: danielvdspoel.com/portfolio
 
 jobs:
   test:
