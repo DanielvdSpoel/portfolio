@@ -1,7 +1,7 @@
 # Multi-stage Docker build for Vue.js application
 
 # Stage 1: Build the application
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Set working directory
 WORKDIR /app
