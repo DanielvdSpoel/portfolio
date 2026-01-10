@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: harbor.danielvdspoel.com
-  IMAGE_NAME: danielvdspoel.com/portfolio
+  IMAGE_NAME: portfolio/website
 
 jobs:
   test:
