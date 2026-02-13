@@ -1,4 +1,4 @@
-import { ref, onMounted, readonly } from 'vue'
+import { ref, onMounted, onUnmounted, readonly } from 'vue'
 
 export type Theme = 'light' | 'dark'
 
@@ -18,7 +18,7 @@ export function useTheme() {
   const initTheme = () => {
     const savedTheme = localStorage.getItem('theme') as Theme
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
+
     if (savedTheme) {
       setTheme(savedTheme)
     } else if (prefersDark) {
@@ -30,20 +30,23 @@ export function useTheme() {
 
   // Watch for system theme changes
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  mediaQuery.addEventListener('change', (e) => {
+  const handleSystemThemeChange = (e: MediaQueryListEvent) => {
     if (!localStorage.getItem('theme')) {
       setTheme(e.matches ? 'dark' : 'light')
     }
-  })
+  }
 
   onMounted(() => {
     initTheme()
+    mediaQuery.addEventListener('change', handleSystemThemeChange)
+  })
+
+  onUnmounted(() => {
+    mediaQuery.removeEventListener('change', handleSystemThemeChange)
   })
 
   return {
     theme: readonly(theme),
-    setTheme,
     toggleTheme,
-    initTheme
   }
 }

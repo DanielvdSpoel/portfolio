@@ -36,7 +36,7 @@ spec:
         - name: harbor-secret
       containers:
       - name: portfolio
-        image: harbor.danielvdspoel.com/danielvdspoel.com/portfolio:latest
+        image: harbor.danielvdspoel.com/portfolio/website:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

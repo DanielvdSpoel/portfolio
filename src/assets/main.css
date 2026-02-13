@@ -7,7 +7,6 @@
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --accent-primary: #3b82f6;
-  --accent-hover: #2563eb;
   --border-color: #e2e8f0;
 }
 
@@ -17,12 +16,19 @@
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --accent-primary: #60a5fa;
-  --accent-hover: #3b82f6;
   --border-color: #334155;
 }
 
-/* Smooth transitions for theme switching */
-* {
+/* Smooth transitions for theme switching — scoped to elements that change on theme toggle */
+body,
+main,
+header,
+a,
+button,
+div,
+p,
+h1,
+img {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -38,55 +44,33 @@
   }
 }
 
-@keyframes fadeInDelayed {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out forwards;
 }
 
 .animate-fade-in-delayed {
-  animation: fadeInDelayed 0.8s ease-out 0.2s forwards;
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
   opacity: 0;
 }
 
 .animate-fade-in-delayed-2 {
-  animation: fadeInDelayed 0.8s ease-out 0.4s forwards;
+  animation: fadeIn 0.8s ease-out 0.4s forwards;
   opacity: 0;
 }
 
 .animate-fade-in-delayed-3 {
-  animation: fadeInDelayed 0.8s ease-out 0.6s forwards;
+  animation: fadeIn 0.8s ease-out 0.6s forwards;
   opacity: 0;
 }
 
-/* Button hover effects */
-.btn-primary:hover {
-  transform: translateY(-2px);
-}
-
-.btn-secondary:hover {
-  transform: translateY(-1px);
-}
-
-/* Social icon hover effects */
-.social-icon:hover {
-  transform: translateY(-2px) scale(1.1);
-}
-
-/* Theme toggle button styles */
-.theme-toggle {
-  transition: all 0.2s ease;
-}
-
-.theme-toggle:hover {
-  transform: scale(1.1);
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
