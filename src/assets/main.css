@@ -1,25 +1,36 @@
 @import "tailwindcss";
 
-/* CSS Variables for theme support */
+/* Typography - Load Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
+
+/* CSS Variables for theme support with OKLCH colors */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --accent-primary: #3b82f6;
-  --border-color: #e2e8f0;
+  /* Warm, editorial palette - Light mode default */
+  --bg-primary: oklch(98% 0.01 70);  /* Warm off-white */
+  --bg-secondary: oklch(95% 0.015 60);  /* Warmer secondary */
+  --text-primary: oklch(20% 0.02 30);  /* Deep warm black */
+  --text-secondary: oklch(50% 0.03 40);  /* Warm gray */
+  --text-tertiary: oklch(65% 0.02 50);  /* Lighter warm gray */
+  --accent-primary: oklch(55% 0.18 40);  /* Rich amber/orange */
+  --accent-hover: oklch(45% 0.20 35);  /* Deeper amber on hover */
+  --accent-subtle: oklch(75% 0.12 50);  /* Soft amber for highlights */
+  --border-subtle: oklch(85% 0.01 50);  /* Warm border */
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --accent-primary: #60a5fa;
-  --border-color: #334155;
+  /* Dark mode with warm undertones - not blue! */
+  --bg-primary: oklch(18% 0.02 30);  /* Deep warm black */
+  --bg-secondary: oklch(22% 0.02 35);  /* Slightly lighter */
+  --text-primary: oklch(95% 0.01 60);  /* Warm white */
+  --text-secondary: oklch(70% 0.02 50);  /* Warm gray */
+  --text-tertiary: oklch(55% 0.02 45);  /* Dimmer warm gray */
+  --accent-primary: oklch(70% 0.16 60);  /* Warm amber */
+  --accent-hover: oklch(75% 0.18 65);  /* Brighter on hover */
+  --accent-subtle: oklch(40% 0.10 45);  /* Subtle warm accent */
+  --border-subtle: oklch(30% 0.02 35);  /* Warm border */
 }
 
-/* Smooth transitions for theme switching — scoped to elements that change on theme toggle */
+/* Smooth transitions for theme switching */
 body,
 main,
 header,
@@ -28,15 +39,38 @@ button,
 div,
 p,
 h1,
+h2,
 img {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Fade-in animations */
-@keyframes fadeIn {
+/* Focus visible styles - keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Typography system */
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+/* Entrance animation - subtle, refined */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -44,23 +78,48 @@ img {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
+.animate-entrance {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.animate-fade-in-delayed {
-  animation: fadeIn 0.8s ease-out 0.2s forwards;
+.animate-entrance-delay-1 {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
   opacity: 0;
 }
 
-.animate-fade-in-delayed-2 {
-  animation: fadeIn 0.8s ease-out 0.4s forwards;
+.animate-entrance-delay-2 {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
   opacity: 0;
 }
 
-.animate-fade-in-delayed-3 {
-  animation: fadeIn 0.8s ease-out 0.6s forwards;
+.animate-entrance-delay-3 {
+  animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
   opacity: 0;
+}
+
+/* Dropdown animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dropdown-enter {
+  animation: fadeInScale 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Better text rendering */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 /* Respect reduced motion preferences */

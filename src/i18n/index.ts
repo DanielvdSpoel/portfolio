@@ -35,9 +35,24 @@ export const i18n = createI18n<[MessageSchema], 'en' | 'nl'>({
 
 export function setLanguage(locale: 'en' | 'nl') {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const previousLocale = (i18n.global.locale as any).value
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (i18n.global.locale as any).value = locale
   localStorage.setItem('language', locale)
   document.documentElement.setAttribute('lang', locale)
+
+  // Track language change (direct API call, not in component context)
+  if (typeof window.rybbit !== 'undefined' && navigator.doNotTrack !== '1') {
+    try {
+      window.rybbit.event('language_changed', {
+        from: previousLocale,
+        to: locale,
+        browserLanguage: navigator.language
+      })
+    } catch (error) {
+      console.warn('Language tracking failed:', error)
+    }
+  }
 }
 
 export default i18n

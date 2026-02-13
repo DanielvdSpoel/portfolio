@@ -1,57 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { SunIcon, MoonIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { useTheme } from '@/composables/useTheme'
+import { useAnalytics } from '@/composables/useAnalytics'
 import { setLanguage } from '@/i18n'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const { theme, toggleTheme } = useTheme()
 const { t, locale } = useI18n()
-
-// Animated subtitle logic
-const roles = ['devops', 'fullstack', 'data'] as const
-const currentRoleIndex = ref(0)
-const displayedText = ref('')
-const currentFullRole = ref('')
-const isTyping = ref(true)
+const { trackOutboundLink, trackEmailClick } = useAnalytics()
 const showLanguageDropdown = ref(false)
 
-let typingInterval: number | null = null
-let roleInterval: number | null = null
-
-const typeText = (text: string) => {
-  displayedText.value = ''
-  isTyping.value = true
-  let i = 0
-
-  typingInterval = setInterval(() => {
-    if (i < text.length) {
-      displayedText.value += text.charAt(i)
-      i++
-    } else {
-      isTyping.value = false
-      clearInterval(typingInterval!)
-    }
-  }, 100)
+// Analytics event handlers
+const handleEmailClick = () => {
+  trackEmailClick()
 }
 
-const startRoleAnimation = () => {
-  const currentRole = roles[currentRoleIndex.value]
-  const fullText = t(`roles.${currentRole}`)
-  currentFullRole.value = fullText
-  typeText(fullText)
-
-  roleInterval = setTimeout(() => {
-    currentRoleIndex.value = (currentRoleIndex.value + 1) % roles.length
-    startRoleAnimation()
-  }, 3500)
-}
-
-// Keyboard navigation for language dropdown
-const handleDropdownKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
-    showLanguageDropdown.value = false
-  }
+const handleSocialClick = (platform: string, url: string) => {
+  trackOutboundLink(url, platform)
 }
 
 // Close dropdown when clicking outside
@@ -62,167 +28,190 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 }
 
+// Keyboard navigation for language dropdown
+const handleDropdownKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    showLanguageDropdown.value = false
+  }
+}
+
 onMounted(() => {
-  startRoleAnimation()
   document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
-  if (typingInterval) clearInterval(typingInterval)
-  if (roleInterval) clearTimeout(roleInterval)
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
 <template>
-  <main class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+  <div class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
     <!-- Skip to content -->
     <a
-      href="#content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[var(--accent-primary)] focus:text-white focus:outline-none"
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-6 focus:left-6 focus:z-50 focus:px-6 focus:py-3 focus:rounded-lg focus:bg-[var(--accent-primary)] focus:text-white focus:font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-primary)]"
     >
       Skip to content
     </a>
 
-    <!-- Header Controls -->
-    <header class="absolute top-6 left-6 z-10 flex items-center gap-4">
-        <!-- Language Selector -->
-        <div class="relative language-dropdown" @keydown="handleDropdownKeydown">
-          <button
-            @click="showLanguageDropdown = !showLanguageDropdown"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] transition-all duration-200"
-            :aria-label="t('ui.switchLanguage')"
-            :aria-expanded="showLanguageDropdown"
-            aria-haspopup="menu"
-          >
-            <span class="text-sm font-medium">{{ locale.toUpperCase() }}</span>
-            <ChevronDownIcon class="w-4 h-4" :class="{ 'rotate-180': showLanguageDropdown }" />
-          </button>
-
-          <div
-            v-if="showLanguageDropdown"
-            role="menu"
-            class="absolute top-full left-0 mt-2 py-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-lg min-w-20"
-          >
-            <button
-              role="menuitem"
-              @click="setLanguage('en'); showLanguageDropdown = false"
-              class="w-full px-3 py-2 text-left text-sm hover:bg-[var(--border-color)] transition-colors"
-              :class="{ 'font-semibold text-[var(--accent-primary)]': locale === 'en' }"
-            >
-              EN
-            </button>
-            <button
-              role="menuitem"
-              @click="setLanguage('nl'); showLanguageDropdown = false"
-              class="w-full px-3 py-2 text-left text-sm hover:bg-[var(--border-color)] transition-colors"
-              :class="{ 'font-semibold text-[var(--accent-primary)]': locale === 'nl' }"
-            >
-              NL
-            </button>
-          </div>
-        </div>
-
-        <!-- Theme Toggle -->
+    <!-- Header Controls - Compact, minimal -->
+    <header class="fixed top-6 right-6 z-10 flex items-center gap-4">
+      <!-- Language Selector -->
+      <div class="relative language-dropdown" @keydown="handleDropdownKeydown">
         <button
-          @click="toggleTheme"
-          class="p-2 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] hover:scale-110 transition-all duration-200"
-          :aria-label="theme === 'light' ? t('ui.switchToDark') : t('ui.switchToLight')"
+          @click="showLanguageDropdown = !showLanguageDropdown"
+          class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] transition-all duration-200 rounded-md min-h-[44px]"
+          :aria-label="t('ui.switchLanguage')"
+          :aria-expanded="showLanguageDropdown"
+          aria-haspopup="menu"
         >
-          <SunIcon v-if="theme === 'dark'" class="w-5 h-5" />
-          <MoonIcon v-else class="w-5 h-5" />
+          <span>{{ locale.toUpperCase() }}</span>
+          <ChevronDownIcon class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': showLanguageDropdown }" />
         </button>
-    </header>
 
-    <!-- Main Content -->
-    <div id="content" class="flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-      <!-- Profile Section -->
-      <div class="text-center space-y-8 animate-fade-in">
-        <!-- Profile Photo -->
-        <div class="flex justify-center animate-fade-in-delayed">
-          <img
-            src="/profile.jpg"
-            alt="Daniël van de Spoel"
-            width="160"
-            height="160"
-            class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-[var(--accent-primary)] shadow-lg"
-          />
-        </div>
-
-        <!-- Name and Title -->
-        <div class="space-y-4 animate-fade-in-delayed-2">
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            {{ t('greeting') }}
-          </h1>
-
-          <!-- Animated Subtitle -->
-          <div class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[var(--accent-primary)] min-h-[1.2em]">
-            <span aria-hidden="true" class="inline-block">{{ displayedText }}</span>
-            <span
-              v-if="isTyping"
-              class="inline-block w-0.5 h-8 sm:h-10 bg-[var(--accent-primary)] ml-1 animate-pulse"
-              aria-hidden="true"
-            ></span>
-            <span class="sr-only" aria-live="polite">{{ currentFullRole }}</span>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div class="max-w-2xl animate-fade-in-delayed-3">
-          <p class="text-lg sm:text-xl text-[var(--text-secondary)] leading-relaxed">
-            {{ t('description') }}
-          </p>
-        </div>
-
-        <!-- Social Links -->
-        <div class="flex justify-center gap-6 animate-fade-in-delayed-3">
-          <a
-            href="https://www.linkedin.com/in/dani%C3%ABl-van-der-spoel/"
-            :aria-label="t('social.linkedin')"
-            class="p-3 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] hover:-translate-y-0.5 hover:scale-110 transition-all duration-200"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div
+          v-if="showLanguageDropdown"
+          role="menu"
+          class="absolute top-full right-0 mt-2 py-1 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-lg shadow-xl min-w-20 dropdown-enter"
+        >
+          <button
+            role="menuitem"
+            @click="setLanguage('en'); showLanguageDropdown = false"
+            class="w-full px-4 py-2.5 text-left text-sm hover:bg-[var(--bg-primary)] focus-visible:bg-[var(--bg-primary)] transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+            :class="{ 'font-semibold text-[var(--accent-primary)]': locale === 'en' }"
           >
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
-          </a>
-
-          <a
-            href="https://github.com/danielvdspoel"
-            :aria-label="t('social.github')"
-            class="p-3 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] hover:-translate-y-0.5 hover:scale-110 transition-all duration-200"
-            target="_blank"
-            rel="noopener noreferrer"
+            EN
+          </button>
+          <button
+            role="menuitem"
+            @click="setLanguage('nl'); showLanguageDropdown = false"
+            class="w-full px-4 py-2.5 text-left text-sm hover:bg-[var(--bg-primary)] focus-visible:bg-[var(--bg-primary)] transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+            :class="{ 'font-semibold text-[var(--accent-primary)]': locale === 'nl' }"
           >
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-          </a>
-
-          <a
-            href="https://discord.com/users/253038558942724098"
-            :aria-label="t('social.discord')"
-            class="p-3 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] hover:-translate-y-0.5 hover:scale-110 transition-all duration-200"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
-            </svg>
-          </a>
-
-          <a
-            href="mailto:contact@danielvdspoel.com"
-            :aria-label="t('social.email')"
-            class="p-3 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] hover:-translate-y-0.5 hover:scale-110 transition-all duration-200"
-          >
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-            </svg>
-          </a>
+            NL
+          </button>
         </div>
       </div>
-    </div>
-  </main>
+
+      <!-- Theme Toggle -->
+      <button
+        @click="toggleTheme"
+        class="p-2.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] active:scale-95 transition-all duration-200 rounded-md min-h-[44px] min-w-[44px] flex items-center justify-center"
+        :aria-label="theme === 'light' ? t('ui.switchToDark') : t('ui.switchToLight')"
+      >
+        <SunIcon v-if="theme === 'dark'" class="w-5 h-5" />
+        <MoonIcon v-else class="w-5 h-5" />
+      </button>
+    </header>
+
+    <!-- Main Content - Asymmetric Editorial Layout -->
+    <main id="main-content" class="relative">
+      <div class="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-16 sm:py-24 lg:py-32">
+        <!-- Grid Layout: Content on left, photo on right (desktop) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+
+          <!-- Left Column: Main Content -->
+          <div class="lg:col-span-8 space-y-[clamp(3rem,8vw,4rem)] animate-entrance">
+
+            <!-- Name & Role -->
+            <div class="space-y-4">
+              <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight leading-[1.05] text-[var(--text-primary)]">
+                {{ t('name') }}
+              </h1>
+              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-medium text-[var(--accent-primary)]">
+                {{ t('role') }}
+              </h2>
+            </div>
+
+            <!-- Headline -->
+            <div class="max-w-2xl animate-entrance-delay-1">
+              <p class="text-xl sm:text-2xl lg:text-3xl font-medium text-[var(--text-primary)] leading-snug">
+                {{ t('headline') }}
+              </p>
+            </div>
+
+            <!-- About -->
+            <div class="max-w-xl animate-entrance-delay-2">
+              <p class="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed">
+                {{ t('about') }}
+              </p>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="space-y-6 animate-entrance-delay-3">
+              <!-- Primary CTA -->
+              <div>
+                <a
+                  :href="`mailto:${t('cta.email')}`"
+                  @click="handleEmailClick"
+                  class="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] hover:-translate-y-0.5 active:translate-y-0 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-primary)] shadow-lg shadow-[var(--accent-primary)]/20 hover:shadow-xl hover:shadow-[var(--accent-primary)]/30"
+                >
+                  {{ t('cta.primary') }}
+                </a>
+              </div>
+
+              <!-- Secondary Social Links -->
+              <div>
+                <p class="text-sm font-medium text-[var(--text-tertiary)] mb-3">
+                  {{ t('connect') }}
+                </p>
+                <div class="flex flex-wrap gap-4 sm:gap-5">
+                  <a
+                    href="https://www.linkedin.com/in/daniël-van-der-spoel/"
+                    @click="handleSocialClick('linkedin', 'https://www.linkedin.com/in/daniël-van-der-spoel/')"
+                    :aria-label="t('social.linkedin')"
+                    class="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] focus-visible:text-[var(--accent-primary)] transition-colors duration-200 text-base sm:text-sm font-medium underline decoration-transparent hover:decoration-current underline-offset-4 py-1 min-h-[44px] flex items-center"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                  <a
+                    href="https://github.com/danielvdspoel"
+                    @click="handleSocialClick('github', 'https://github.com/danielvdspoel')"
+                    :aria-label="t('social.github')"
+                    class="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] focus-visible:text-[var(--accent-primary)] transition-colors duration-200 text-base sm:text-sm font-medium underline decoration-transparent hover:decoration-current underline-offset-4 py-1 min-h-[44px] flex items-center"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub
+                  </a>
+                  <a
+                    href="https://discord.com/users/253038558942724098"
+                    @click="handleSocialClick('discord', 'https://discord.com/users/253038558942724098')"
+                    :aria-label="t('social.discord')"
+                    class="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] focus-visible:text-[var(--accent-primary)] transition-colors duration-200 text-base sm:text-sm font-medium underline decoration-transparent hover:decoration-current underline-offset-4 py-1 min-h-[44px] flex items-center"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Discord
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Photo (desktop) -->
+          <div class="lg:col-span-4 animate-entrance-delay-1 order-first lg:order-last">
+            <div class="relative">
+              <img
+                src="/profile.jpg"
+                alt="Daniël van der Spoel"
+                width="400"
+                height="400"
+                loading="lazy"
+                class="w-full max-w-xs mx-auto lg:max-w-none rounded-2xl object-cover aspect-square shadow-2xl shadow-[var(--accent-primary)]/10"
+              />
+              <!-- Decorative element -->
+              <div
+                class="absolute -bottom-4 -right-4 w-24 h-24 bg-[var(--accent-subtle)] rounded-full -z-10 blur-2xl opacity-60 will-change-transform"
+                aria-hidden="true"
+              ></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
 </template>

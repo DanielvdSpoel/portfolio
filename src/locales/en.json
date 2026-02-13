@@ -1,16 +1,18 @@
 {
-  "greeting": "Hey, I'm Daniël",
-  "roles": {
-    "devops": "DevOps Engineer",
-    "fullstack": "Full Stack Developer",
-    "data": "Data Engineer"
+  "name": "Daniël van der Spoel",
+  "role": "DevOps & Data Engineer",
+  "headline": "Building robust infrastructure and data pipelines for large-scale distributed systems.",
+  "about": "I architect and maintain systems that serve thousands of users daily. Specialized in integrating complex components to deliver reliable, scalable solutions across the full software development lifecycle.",
+  "cta": {
+    "primary": "Get in touch",
+    "email": "contact{'@'}danielvdspoel.com"
   },
-  "description": "DevOps and Data Engineer with extensive experience architecting and maintaining large-scale distributed systems. Specialized in building robust infrastructure and data pipelines that serve thousands of users daily. Proven track record of integrating complex system components to deliver reliable, scalable solutions across the full software development lifecycle.",
+  "connect": "Or find me on",
   "social": {
-    "linkedin": "LinkedIn Profile",
-    "github": "GitHub Profile",
-    "discord": "Discord Profile",
-    "email": "Email Address"
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "discord": "Discord",
+    "email": "Email"
   },
   "ui": {
     "switchLanguage": "Switch language",
