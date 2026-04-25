@@ -36,7 +36,7 @@ spec:
                 name: portfolio-service
                 port:
                   number: 80
-    - host: wwww.danielvdspoel.nl
+    - host: www.danielvdspoel.nl
       http:
         paths:
           - path: /

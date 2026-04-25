@@ -9,9 +9,9 @@ updates:
       time: "06:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     assignees:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -52,9 +52,9 @@ updates:
       day: "monday"
       time: "06:00"
     reviewers:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     assignees:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -70,9 +70,9 @@ updates:
       day: "monday"
       time: "06:00"
     reviewers:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     assignees:
-      - "danielvdspoel"
+      - "DanielvdSpoel"
     commit-message:
       prefix: "chore"
       include: "scope"
