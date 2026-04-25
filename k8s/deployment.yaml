@@ -33,10 +33,10 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       imagePullSecrets:
-        - name: harbor-secret
+        - name: ghcr-secret
       containers:
       - name: portfolio
-        image: harbor.danielvdspoel.com/portfolio/website:latest
+        image: ghcr.io/danielvdspoel/portfolio:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
