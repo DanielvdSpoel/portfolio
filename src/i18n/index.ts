@@ -22,7 +22,7 @@ function getBrowserLanguage(): string {
   return 'en'
 }
 
-export const i18n = createI18n<[MessageSchema], 'en' | 'nl'>({
+export const i18n = createI18n<[MessageSchema], 'en' | 'nl', false>({
   legacy: false,
   locale: getBrowserLanguage(),
   fallbackLocale: 'en',
@@ -34,10 +34,8 @@ export const i18n = createI18n<[MessageSchema], 'en' | 'nl'>({
 })
 
 export function setLanguage(locale: 'en' | 'nl') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const previousLocale = (i18n.global.locale as any).value
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (i18n.global.locale as any).value = locale
+  const previousLocale = i18n.global.locale.value
+  i18n.global.locale.value = locale
   localStorage.setItem('language', locale)
   document.documentElement.setAttribute('lang', locale)
 
